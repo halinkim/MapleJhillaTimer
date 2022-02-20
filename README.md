@@ -22,3 +22,18 @@
 ### 소리 알림
 - 낫베기 1분 전에 알림
 - 낫베기 후 다음 시간 알림
+
+## 소스 파일
+- `main.py` : 메인 소스
+- `%d.mp3` : 0~9까지 숫자 소리
+- `1mleft.mp3` : 1분 남았을 때 소리
+- `nextpt.mp3` : 다음 패턴 알림 소리
+### 필요 패키지
+- 파이썬 3.9.5
+- tkinter : 내장
+- time : 내장
+- pygame
+- Pillow
+- numpy
+- opencv-python
+- pypiwin32
