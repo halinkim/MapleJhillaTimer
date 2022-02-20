@@ -6,13 +6,21 @@ import numpy as np
 import cv2
 import tkinter.font as tkfont
 import pygame
+import os
+import sys
+# import winsound
 pygame.mixer.init()
+try:
+    os.chdir(sys._MEIPASS)
+    print(sys._MEIPASS)
+except:
+    os.chdir(os.getcwd())
 
 class Application(tkinter.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.master = master
-        self.master.title("하드 진힐라 자동 타이머")
+        self.master.title("노말 진힐라 자동 타이머")
         self.pack(fill='both', expand=True)
 
         self.game_hwnd = 0
@@ -37,7 +45,7 @@ class Application(tkinter.Frame):
                     break
         fnt = tkfont.Font(family="맑은 고딕", size=16)
         self.phasecool = 0
-        self.mcool = 0
+        self.mcool = 300
 
         self.timeon = 0
 
@@ -45,8 +53,8 @@ class Application(tkinter.Frame):
         self.nowtime = time.time()
 
         self.phase = 0
-        self.period = [166, 152, 126, 100]  # Hard
-        # self.period = [196, 182, 151, 120]  # Normal
+        # self.period = [166, 152, 126, 100]  # Hard
+        self.period = [196, 182, 151, 120]  # Normal
         self.timenext = self.timeleft - self.period[0]
         self.timetogo = self.timeleft - self.timenext
 
@@ -73,21 +81,49 @@ class Application(tkinter.Frame):
         self.btn_minus = tkinter.Button(root, padx=5, pady=5, text='1초 -', command=self.com_btn_minus)
         self.btn_minus.pack()
 
+        self.label_debug = tkinter.Label(root, text='준비 완료')
+        self.label_debug.pack()
+
+        if not self.game_hwnd:
+            self.label_debug.config(text='메이플창 인식 불가')
+
     def com_btn_start(self, *_):
         if self.timeon == 0:
             self.nowtime = time.time()
             self.timeon = 1
+            self.label_debug.config(text='진행중')
 
     def com_btn_reset(self, *_):
         if self.timeon == 1:
+            self.phasecool = 0
+            self.mcool = 300
             self.timeon = 0
             self.timeleft = 60 * 30
             self.nowtime = time.time()
             self.phase = 1
-            self.period = [166, 152, 126, 100]
             self.timenext = self.timeleft - self.period[0]
             self.timetogo = self.timeleft - self.timenext
             self.relabel()
+        else:
+            windows_list = []
+            toplist = []
+
+            def enum_win(hnd, result):
+                win_txt = win32gui.GetWindowText(hnd)
+                windows_list.append((hnd, win_txt))
+
+            win32gui.EnumWindows(enum_win, toplist)
+            print(windows_list)
+            for (hwnd, win_text) in windows_list:
+                if "MapleStory" in win_text:
+                    position = win32gui.GetWindowRect(hwnd)
+                    screenshot = ImageGrab.grab(position)
+                    screenshot = np.array(screenshot)
+                    if len(screenshot[0]) == 1372:
+                        self.game_hwnd = hwnd
+                        print('detected')
+                        self.label_debug.config(text='준비 완료')
+                        break
 
     def com_btn_plus(self, *_):
         if self.timeon == 1:
@@ -110,8 +146,12 @@ class Application(tkinter.Frame):
 
             if self.timetogo == 60 and self.mcool >= 300:
                 self.mcool = 0
-                pygame.mixer.music.load('1mleft.mp3')
-                pygame.mixer.music.play()
+                try:
+                    pygame.mixer.music.load('wav/1mleft.wav')
+                    pygame.mixer.music.play()
+                    # winsound.PlaySound("1mleft.wav", winsound.SND_FILENAME)
+                except:
+                    self.label_debug.config(text='소리 재생 오류1')
 
             # Check Phase
             position = win32gui.GetWindowRect(self.game_hwnd)
@@ -185,8 +225,12 @@ class Application(tkinter.Frame):
                 snd2t = (self.timenext // 60) % 10
                 snd3t = (self.timenext % 60) // 10
                 snd4t = (self.timenext % 60) % 10
-                pygame.mixer.music.load('nextpt.mp3')
-                pygame.mixer.music.play()
+                try:
+                    pygame.mixer.music.load('wav/nextpt.wav')
+                    pygame.mixer.music.play()
+                    # winsound.PlaySound("nextpt.wav", winsound.SND_FILENAME)
+                except:
+                    self.label_debug.config(text='소리 재생 오류2')
                 self.after(1230, self.sndp, snd1t)
                 self.after(1230 + 600, self.sndp, snd2t)
                 self.after(1230 + 1200, self.sndp, snd3t)
@@ -200,15 +244,19 @@ class Application(tkinter.Frame):
         self.label_left.config(text='남은 시간\n' + str(self.timetogo // 60) + ' : ' + str(self.timetogo % 60))
 
     def sndp(self, time):
-        pygame.mixer.music.load('%d.mp3' % time)
-        pygame.mixer.music.play()
+        try:
+            pygame.mixer.music.load('wav/%d.wav' % time)
+            pygame.mixer.music.play()
+            # winsound.PlaySound('%d.wav' % time, winsound.SND_FILENAME)
+        except:
+            self.label_debug.config(text='소리 재생 오류3')
 
 
 
 
 
 root = tkinter.Tk()
-root.geometry("180x330+4+4")
+root.geometry("180x360+4+4")
 root.resizable(False, False)
 app = Application(root)
 app.void()
