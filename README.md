@@ -14,6 +14,7 @@
 ![image](https://user-images.githubusercontent.com/89760255/154830358-6253a20c-75e5-4b55-af10-15de5bb4b8e6.png)
 
 - 진힐라 입장과 동시에 시작 버튼 누르기
+
 ![image](https://user-images.githubusercontent.com/89760255/154830401-7f88821d-65d3-476b-b8a3-3a1872190b29.png)
 
 - 타이머의 현재 시간이 게임 내 남은 시간과 일치하도록 1초+, 1초- 버튼을 눌러 조정
