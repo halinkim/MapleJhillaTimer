@@ -4,7 +4,6 @@ import win32gui
 from PIL import ImageGrab
 import numpy as np
 import cv2
-import playsound
 import tkinter.font as tkfont
 import pygame
 pygame.mixer.init()
@@ -120,8 +119,8 @@ class Application(tkinter.Frame):
             screenshot = np.array(screenshot1)
             img = cv2.cvtColor(screenshot, cv2.COLOR_RGB2BGR)
 
-            color1 = img[33, 497]  # 477, 497
-            color2 = img[33, 648]  # 628, 648
+            color1 = img[33, 497 + 4]  # 477, 497
+            color2 = img[33, 648 + 4]  # 628, 648
             color3 = img[253, 1100]
             color4 = img[208, 1100]
 
